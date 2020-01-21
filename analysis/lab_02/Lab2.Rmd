@@ -1,0 +1,124 @@
+---
+title: "Lab 2"
+author: "Kyle Belanger"
+date: "1/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load Libraries
+
+```{r}
+library(readxl)
+library(tidyr)
+library(magrittr)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+```
+
+Import Data
+
+```{r}
+ds <- read_excel(
+    path   = "../../data_public/Tableau 10 Training Practice Data.xlsx" 
+    ,sheet = "02 - Patient Falls-Single Hosp"
+    )
+```
+Clean Data Names
+
+```{r}
+#should make reusable forumla at later time
+names(ds) <- tolower(names(ds))
+names(ds) <- str_replace_all(names(ds)," ", "_")
+
+```
+
+
+Convert Data to 'Long Form' 
+```{r}
+ds1 <- ds %>% 
+  gather("patient_falls_no_injury_rate" , "patient_falls_with_injury_rate"
+         ,key   = "injury" 
+         ,value = "rate" ) %>% 
+  mutate(injury = (injury == "patient_falls_with_injury_rate"))
+         
+```
+
+Graph 5.1
+
+```{r}
+b1 <- ds %>% 
+  ggplot(mapping = aes(x = reorder(type_of_care,total_patient_falls_rate ) , y = total_patient_falls_rate)) +
+  geom_col(fill = "#2b83ba") + 
+  coord_flip() +
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.ticks = element_blank()) +
+  labs(title = "Rate of Patient Falls (per 1,000 Pateint Days)\nby Type of Care for FY2017"
+      ,x     = NULL
+      ,y     = NULL
+      ) +
+  theme_classic() +
+  geom_text(aes(label = format(total_patient_falls_rate, digits = 2)), nudge_y = -.25, color = "white")
+  
+b1
+```
+
+Graph 5.2 Side-by-Side
+
+```{r}
+
+b2 <- ds1 %>% 
+  ggplot(mapping = aes(x = reorder(type_of_care, -rate), y = rate, fill = injury)) +
+  geom_col(position = "dodge") +
+  scale_x_discrete(position = "top") +
+  labs(title = "Rate of Patient Falls (per 1,000 Patient Days)\nNo Injury vs. Injury\nBy Type Of Care for FY2017"
+       ,x    = NULL
+       ,y    = "Rate of Falls (per 1,000 patient days)"
+       ,fill = NULL) +
+  theme_bw() +
+  theme(legend.position   = "bottom"
+        ,panel.grid.major = element_blank()
+        ,panel.grid.minor = element_blank()
+        ) +
+  scale_fill_manual(values  = c("#2b83ba","#fdae61")
+                    ,labels = c("No Injury", "With Injury")
+                    ) +
+  scale_y_continuous(breaks = seq(0,4,0.5))
+
+b2
+
+
+
+
+#"Rate of Patient Falls (per 1,000 Patient Days)\nNo Injury vs. Injury\nBy Type Of Care for FY2017"
+```
+
+Graph 5.2 Stacked Bar
+
+```{r}
+
+b3 <- ds1 %>% 
+  ggplot(mapping = aes(x = reorder(type_of_care, -rate), y = rate, fill = injury, label = rate)) +
+  geom_col()+
+  labs(title = "Rate of Patient Falls (per 1,000 Patient Days)\nNo Injury vs. Injury\nType Of Care, Sorted by Injury for FY2017"
+       ,x = NULL
+       ,y = "Rate of Falls (per 1,000 patient days)"
+       ,fill = NULL) +
+  theme_bw() +
+  theme(legend.position = "top"
+        ,panel.grid.major = element_blank()
+        ,panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = c("#2b83ba","#fdae61"), labels = c("No Injury", "With Injury")) +
+  geom_text(size = 4, position = position_stack(vjust = 0.5), color = 'white')
+
+b3
+
+```
+
+
+
+
