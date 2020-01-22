@@ -1,0 +1,87 @@
+---
+title: "Lab 3"
+author: "Kyle Belanger"
+date: "1/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r}
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+```
+
+# Import Data
+
+```{r}
+ds <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "03 - WHO Life Expect & Mort"
+                        )
+
+```
+
+# Clean Names and Tidy Data
+
+```{r}
+varnames <-  c("who_region", "country", "year" , "sex" , "life_expect_birth" , "neo_mort"
+               ,"under_five_mort" , "health_expenditure")
+names(ds) <- varnames
+
+# remove unedeed columns 
+ds <-  ds %>% 
+        select(who_region,country,life_expect_birth,neo_mort,under_five_mort,health_expenditure)
+
+
+```
+
+# Create Graphs
+
+```{r}
+g1 <- ds %>% filter(who_region == "Africa") %>% 
+  ggplot(mapping = aes(x = reorder(country, life_expect_birth), y = life_expect_birth)) +
+  geom_col(fill = "#2b83ba") +
+  labs(x  = NULL
+       ,y = "Life Expectancy at Birth (years)"
+       ) + 
+  coord_flip() +
+  theme_classic() +
+  geom_text(aes(label = format(life_expect_birth, digits = 0))
+            ,nudge_y = 4
+            ,vjust   = 0.25
+            ,size    = 3 
+            ,color   = "black"
+            )
+g1
+
+g2 <- ds %>% filter(who_region == "Africa") %>% 
+  ggplot(mapping = aes(x = reorder(country, life_expect_birth), y = neo_mort)) +
+  geom_col(fill = "#2b83ba") +
+  labs(x  = NULL
+       ,y = "Neonatal Mortality Rate \n(per 1,000 live births)"
+       ) + 
+  coord_flip() +
+  scale_y_continuous(breaks = seq(0,200,50), limits = c(0,200)) +
+  theme_classic() +
+  theme(axis.text.y = element_blank()) +
+  geom_text(aes(label = format(neo_mort, digits = 0))
+            ,nudge_y = 4
+            ,vjust   = 0.25
+            ,size    = 3 
+            ,color   = "black"
+            )
+g2
+```
+
+# All Graphs together
+
+```{r fig.width=12}
+plot_grid(g1,g2,rel_widths = c(2,1), rows = 1, align = "h")
+```
+
