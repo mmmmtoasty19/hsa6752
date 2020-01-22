@@ -48,12 +48,12 @@ g1 <- ds %>% filter(who_region == "Africa") %>%
   ggplot(mapping = aes(x = reorder(country, life_expect_birth), y = life_expect_birth)) +
   geom_col(fill = "#2b83ba") +
   labs(x  = NULL
-       ,y = "Life Expectancy at Birth (years)"
+       ,y = "Life Expectancy at Birth \n(years)"
        ) + 
   coord_flip() +
   theme_classic() +
   geom_text(aes(label = format(life_expect_birth, digits = 0))
-            ,nudge_y = 4
+            ,nudge_y = 5
             ,vjust   = 0.25
             ,size    = 3 
             ,color   = "black"
@@ -71,17 +71,53 @@ g2 <- ds %>% filter(who_region == "Africa") %>%
   theme_classic() +
   theme(axis.text.y = element_blank()) +
   geom_text(aes(label = format(neo_mort, digits = 0))
-            ,nudge_y = 4
+            ,nudge_y = 10
             ,vjust   = 0.25
             ,size    = 3 
             ,color   = "black"
             )
 g2
+
+g3 <- ds %>% filter(who_region == "Africa") %>% 
+  ggplot(mapping = aes(x = reorder(country, life_expect_birth), y = under_five_mort)) +
+  geom_col(fill = "#2b83ba") +
+  labs(x  = NULL
+       ,y = "Under Five Mortality Rate \n(per 1,000 live births)"
+       ) + 
+  coord_flip() +
+  scale_y_continuous(breaks = seq(0,200,50), limits = c(0,200)) +
+  theme_classic() +
+  theme(axis.text.y = element_blank()) +
+  geom_text(aes(label = format(under_five_mort, digits = 0))
+            ,nudge_y = 10
+            ,vjust   = 0.25
+            ,size    = 3 
+            ,color   = "black"
+            )
+g3
+
+g4 <- ds %>% filter(who_region == "Africa") %>% 
+  ggplot(mapping = aes(x = reorder(country, life_expect_birth), y = health_expenditure)) +
+  geom_col(fill = "#2b83ba") +
+  labs(x  = NULL
+       ,y = "Health Expenditure per Capita \n(US$)"
+       ) + 
+  coord_flip() +
+  theme_classic() +
+  theme(axis.text.y = element_blank()) +
+  geom_text(aes(label = format(health_expenditure, digits = 0))
+            ,nudge_y = 25
+            ,vjust   = 0.25
+            ,size    = 3 
+            ,color   = "black"
+            )
+g4
 ```
 
 # All Graphs together
 
 ```{r fig.width=12}
-plot_grid(g1,g2,rel_widths = c(2,1), rows = 1, align = "h")
+plot_grid(g1,g2,g3,g4, rel_widths = c(1,0.5,0.75,0.75),
+          rows = 1, align = "h")
 ```
 
