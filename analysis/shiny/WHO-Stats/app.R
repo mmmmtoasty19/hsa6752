@@ -48,6 +48,7 @@ ui <- fluidPage(
             )
         ,mainPanel(
             plotOutput("g1")
+            ,plotOutput("g2")
         )
     )
 )
@@ -73,6 +74,25 @@ server <- function(input,output) {
                   ,color   = "black"
                 )
         )
+    output$g2 <-  
+        renderPlot(
+        ggplot(ds[ds$who_region == input$region,],
+               mapping = aes(x = reorder(country, life_expect_birth), y = neo_mort)) +
+        geom_col(fill = "#2b83ba") +
+        labs(x  = NULL
+             ,y = "Neonatal Mortality Rate \n(per 1,000 live births)"
+        ) + 
+        coord_flip() +
+        scale_y_continuous(breaks = seq(0,200,50), limits = c(0,200)) +
+        theme_classic() +
+        theme(axis.text.y = element_blank()) +
+        geom_text(aes(label = format(neo_mort, digits = 0))
+                  ,nudge_y = 10
+                  ,vjust   = 0.25
+                  ,size    = 3 
+                  ,color   = "black"
+        )
+    )
 }
 
 
