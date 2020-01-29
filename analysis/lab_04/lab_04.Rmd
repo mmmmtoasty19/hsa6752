@@ -18,6 +18,7 @@ library(dplyr)  # data manipulation
 library(tidyr) # tidy data
 library(lubridate) #work with dates
 library(stringr) # manipulate strings
+library(plotly)
 ```
 
 # Import Data
@@ -55,7 +56,7 @@ ds1 <- ds %>% mutate(
                         ,labels = c(month.abb[10:12],month.abb[1:9]))
        ,year = year(ds$date)
         ,date_adjustment = ifelse(month(ds$date) >= 10, 1,0 )
-        ,fiscal_year = year + date_adjustment
+        ,fiscal_year = factor(year + date_adjustment)
         #convert % Pos from decmial to pct
         ,pct_tests_pos_for_influenza = round(pct_tests_pos_for_influenza * 100, digits = 0)
         )
@@ -69,13 +70,14 @@ ds1 %>% glimpse()
                                   
 
 g1 <- ds1 %>% 
-    ggplot(aes(x = month, y = pct_tests_pos_for_influenza, color = factor(fiscal_year)
+    ggplot(aes(x = month, y = pct_tests_pos_for_influenza, color = fiscal_year
                ,group = fiscal_year)) +
   geom_line() +
   labs(
     x  = NULL
     ,y = "% Tests (+) for Influenza"
     ,color = NULL
+    ,title = "Flu Viral Surveillance: % Respiratory Specimens Positive for Influenza \nOctober - September \nFor Flu Seasons 2013 - 2016"
   ) +
   theme_classic() +
   scale_y_continuous(limits = c(0,40), breaks = seq(0,40,5)) +
@@ -83,4 +85,33 @@ g1 <- ds1 %>%
 
 g1
 ```
+
+#plotly
+
+```{r}
+
+
+
+g2 <- ds1 %>% 
+    plot_ly(x = ~month, y = ~pct_tests_pos_for_influenza, type = "scatter", mode = "lines" 
+            ,color = ~fiscal_year
+            ,colors = c("#a6611a","#dfc27d","#80cdc1","#018571")
+            , hoverinfo = 'y') %>% 
+    layout(xaxis = list(
+                        title = ""
+                    )
+           ,yaxis = list(
+                        title = "% Tests (+) for Influenza"
+                    )
+           ,title = "Flu Viral Surveillance: % Respiratory Specimens Positive for Influenza"
+           ,legend = list(
+                      x = 100
+                      ,y = 0.5
+                      )   
+           
+           )
+
+g2
+```
+
 
