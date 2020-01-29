@@ -1,0 +1,76 @@
+---
+title: "Lab 4"
+author: "Kyle Belanger"
+date: "1/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r}
+library(magrittr) #pipes
+library(ggplot2) #ploting 
+library(dplyr)  # data manipulation
+library(tidyr) # tidy data
+library(lubridate) #work with dates
+library(stringr) # manipulate strings
+```
+
+# Import Data
+
+```{r, results='hide'}
+#readxl::excel_sheets(path = "../../data_public/Tableau 10 Training Practice Data.xlsx")  
+# Used to read sheet names, makes user error less likly
+
+ds <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "05 - Flu Occurrence FY2013-2016"
+                        )
+ds %>% glimpse()  # Glimpse at data
+```
+
+# Transform Data
+
+```{r}
+#reformat column names - 
+#this should 100% be some kind of function to all be done at once!!
+
+names(ds) <- tolower(names(ds))
+names(ds) <- str_replace_all(names(ds)," ", "_") 
+names(ds) <- str_replace_all(names(ds), "\\(\\+\\)", "pos") #regualr experssion to match (+)
+names(ds) <- str_replace_all(names(ds), "\\(", "")
+names(ds) <- str_replace_all(names(ds), "\\)", "")
+names(ds) <- str_replace_all(names(ds), "\\%", "pct")
+
+
+# split date time
+ds1 <- ds %>% mutate(
+        month = month(ds$date, label = TRUE)
+       ,year = year(ds$date)
+        ,date_adjustment = ifelse(month(ds$date) >= 10, 1,0 )
+        ,fiscal_year = year + date_adjustment
+        #convert % Pos from decmial to pct
+        ,pct_tests_pos_for_influenza = round(pct_tests_pos_for_influenza * 100, digits = 0)
+        )
+
+ds1 %>% glimpse()
+```
+
+#Graphs
+
+```{r}
+ds1$month <- factor(ds1$month
+                          ,levels = c("Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
+                                      ,"Apr","May","Jun","Jul","Aug","Sep"))
+
+g1 <- ds1 %>% 
+    ggplot(aes(x = month, y = pct_tests_pos_for_influenza, color = factor(fiscal_year)
+               ,group = fiscal_year)) +
+  geom_line()
+
+g1
+```
+
