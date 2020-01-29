@@ -1,0 +1,87 @@
+---
+title: "Lab 3 Facet"
+author: "Kyle Belanger"
+date: "1/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r}
+library(magrittr) #pipes
+library(ggplot2) #ploting 
+library(dplyr)
+library(tidyr)
+
+```
+
+# Import Data
+
+```{r}
+ds <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "03 - WHO Life Expect & Mort"
+                        )
+```
+
+
+# Clean Names and Transform
+
+```{r}
+varnames <-  c("who_region", "country", "year" , "sex" , "life_expect_birth" , "neo_mort"
+               ,"under_five_mort" , "health_expenditure")
+names(ds) <- varnames
+
+# Order Countries based on Life Expectancy at Birth
+
+ds$country <- factor(ds$country, levels = ds$country[order(ds$life_expect_birth)]) 
+
+#To "Long" Form
+
+ds1 <-  ds %>% pivot_longer(5:8)#select columns 5 throuh 8, leave new columns at default names
+
+# Set up labels for Facet, as well as function for Facet Labeller
+
+facet_labels <-  list(
+"life_expect_birth"   = "Life Expectancy at Birth "                            
+,"neo_mort"           = "Neonatal Mortality Rate"             
+,"under_five_mort"    = "Under-Five Mortality Rate"
+,"health_expenditure" = "Health Expenditure per Capita (US$)"  )
+
+variable_labeller <- function(variable,value){
+  return(facet_labels[value])
+}
+
+
+```
+
+
+# Graphs
+
+```{r fig.height=7, fig.width=12}
+
+hightlight_countries <- (c("Mauritania", "South Africa")) 
+
+g1 <-  ds1 %>% filter(who_region == "Africa") %>% 
+  mutate(name = factor(name, levels = c("life_expect_birth" , "neo_mort"
+               ,"under_five_mort" , "health_expenditure"))
+         ,highlight = country %in% hightlight_countries) %>% 
+  ggplot(aes(x = country, y = value, fill = highlight)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    title = "World Bank Life Expectancy, Neonatal & Under-Five Mortality Rates, and Health Expenditure Analysis"
+    ,x  = NULL
+    ,y = NULL
+  ) +
+  facet_grid(~name, scales = "free_x",labeller = variable_labeller) +
+  theme_bw() +
+  geom_text(aes(label = round(value, 0)), hjust = 0) +
+  scale_y_continuous(expand = expand_scale(mult = c(0,0.2))) +
+  scale_fill_manual(values = c("TRUE" = "#fc8d59", "FALSE" = "#2b83ba"))
+g1
+```
+
