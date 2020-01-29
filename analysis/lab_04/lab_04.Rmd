@@ -48,7 +48,11 @@ names(ds) <- str_replace_all(names(ds), "\\%", "pct")
 
 # split date time
 ds1 <- ds %>% mutate(
-        month = month(ds$date, label = TRUE)
+        #create month column, then set factors and labels to start fiscal year in Oct
+        month = month(ds$date)
+        ,month = factor(month
+                        ,levels = c(10:12, 1:9)
+                        ,labels = c(month.abb[10:12],month.abb[1:9]))
        ,year = year(ds$date)
         ,date_adjustment = ifelse(month(ds$date) >= 10, 1,0 )
         ,fiscal_year = year + date_adjustment
@@ -62,14 +66,20 @@ ds1 %>% glimpse()
 #Graphs
 
 ```{r}
-ds1$month <- factor(ds1$month
-                          ,levels = c("Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
-                                      ,"Apr","May","Jun","Jul","Aug","Sep"))
+                                  
 
 g1 <- ds1 %>% 
     ggplot(aes(x = month, y = pct_tests_pos_for_influenza, color = factor(fiscal_year)
                ,group = fiscal_year)) +
-  geom_line()
+  geom_line() +
+  labs(
+    x  = NULL
+    ,y = "% Tests (+) for Influenza"
+    ,color = NULL
+  ) +
+  theme_classic() +
+  scale_y_continuous(limits = c(0,40), breaks = seq(0,40,5)) +
+  scale_color_manual(values = c("#a6611a","#dfc27d","#80cdc1","#018571"))
 
 g1
 ```
