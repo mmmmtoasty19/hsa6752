@@ -23,7 +23,7 @@ library(plotly)
 
 # Import Data
 
-```{r, results='hide'}
+```{r}
 #readxl::excel_sheets(path = "../../data_public/Tableau 10 Training Practice Data.xlsx")  
 # Used to read sheet names, makes user error less likly
 
@@ -37,14 +37,24 @@ ds %>% glimpse()  # Glimpse at data
 
 ```{r}
 #reformat column names - 
-#this should 100% be some kind of function to all be done at once!!
 
-names(ds) <- tolower(names(ds))
-names(ds) <- str_replace_all(names(ds)," ", "_") 
-names(ds) <- str_replace_all(names(ds), "\\(\\+\\)", "pos") #regualr experssion to match (+)
-names(ds) <- str_replace_all(names(ds), "\\(", "")
-names(ds) <- str_replace_all(names(ds), "\\)", "")
-names(ds) <- str_replace_all(names(ds), "\\%", "pct")
+format_names <- function(x) {
+  #Fucntion to set all names to lower case, and strip unneeded characters
+  x <- tolower(x)
+  x <- str_replace_all(x,c(
+                       " "         = "_"
+                      ,"\\(\\+\\)" = "pos"  #regualr experssion to match (+)
+                      ,"\\("       = ""
+                      ,"\\)"       = ""
+                      ,"\\%"       = "pct"
+                      )
+                  ) #set each pattern equal to replacement
+                }
+
+#run the format name function on all names from DS
+colnames(ds) <- sapply(colnames(ds),format_names)    
+
+
 
 
 # split date time
@@ -64,7 +74,7 @@ ds1 <- ds %>% mutate(
 ds1 %>% glimpse()
 ```
 
-#Graphs
+# Graphs
 
 ```{r}
                                   
@@ -86,7 +96,7 @@ g1 <- ds1 %>%
 g1
 ```
 
-#plotly
+# plotly
 
 ```{r}
 
