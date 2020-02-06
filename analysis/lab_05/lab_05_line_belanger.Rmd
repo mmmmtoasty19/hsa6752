@@ -1,0 +1,100 @@
+---
+title: "Lab 5 Deviation Line"
+author: "Kyle Belanger"
+date: "2/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r}
+library(magrittr) #pipes
+library(ggplot2) #ploting 
+library(dplyr)  # data manipulation
+library(tidyr) # tidy data
+library(lubridate) #work with dates
+library(stringr) # manipulate strings
+library(plotly) #interactive graphs
+```
+
+
+
+```{r }
+ds_yoy <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "09 - Patient Volume YOY Change"
+                        )
+
+ds_yoy %>% glimpse()
+
+```
+
+
+# Transform Data
+
+```{r}
+yoy_new_varnames <- c("date", "patient_visits")
+
+names(ds_yoy) <- yoy_new_varnames
+
+ds_yoy1 <- ds_yoy %>% 
+  #pull month and year from the current date column
+  mutate(  
+    month = factor(month(ds_yoy$date),
+                   levels  = c(1:12)
+                   ,labels = month.name[1:12])
+    ,year = year(ds_yoy$date)
+  ) %>% 
+  #select all columns but date
+  select(2:4) %>% 
+  #pivot date so each month has 2015 and 2016 data next to each other
+  pivot_wider(names_from   = year
+              ,values_from = patient_visits) %>% 
+  #add percent difference column
+  mutate(
+    percent_difference = round(((`2016` - `2015`)/`2015`)*100,1)
+  )
+
+```
+
+# Graph GGPlot YOY (Deviation Line)
+
+```{r}
+#label function to add perecnt sign to graph
+percent_formatter <- function(x) {
+  return(paste(format(x, nsmall = 1),"%"))
+}
+
+g_yoy1 <- ds_yoy1 %>% 
+    ggplot(mapping = aes(x = month, y = percent_difference, group = 1)) +
+  geom_line(color = "#4e79a7", size = 1) +
+  geom_point(color = "#4e79a7", size = 2) +
+  geom_hline(yintercept = 0, linetype = 'dashed') +
+  ggrepel::geom_label_repel(aes(label = percent_difference)) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(
+      angle  = 45
+      ,hjust = 1
+      )
+  ) +
+  labs(
+    title = "Percent Change of Hospital Emergency Department Patient Volume by Month,  
+2016 compared with 2015"
+    ,x = NULL
+    ,y = "YOY Patient Visit Percent Change"
+  ) +
+  scale_y_continuous(breaks = seq(-6,7,1), labels = percent_formatter)
+
+
+g_yoy1
+  
+  
+  
+  
+  
+```
+

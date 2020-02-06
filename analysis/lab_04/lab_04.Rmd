@@ -36,19 +36,20 @@ ds %>% glimpse()  # Glimpse at data
 # Transform Data
 
 ```{r}
-#reformat column names - 
+#reformat column names - there is only four so this is a bit overkill
+#this is more for pratice
 
 format_names <- function(x) {
   #Fucntion to set all names to lower case, and strip unneeded characters
   x <- tolower(x)
-  x <- str_replace_all(x,c(
+  x <- str_replace_all(x,c(#set each pattern equal to replacement
                        " "         = "_"
                       ,"\\(\\+\\)" = "pos"  #regualr experssion to match (+)
                       ,"\\("       = ""
                       ,"\\)"       = ""
                       ,"\\%"       = "pct"
                       )
-                  ) #set each pattern equal to replacement
+                  ) 
                 }
 
 #run the format name function on all names from DS
@@ -72,6 +73,7 @@ ds1 <- ds %>% mutate(
         )
 
 ds1 %>% glimpse()
+
 ```
 
 # Graphs

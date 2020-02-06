@@ -1,0 +1,104 @@
+---
+title: "Lab 5"
+author: "Kyle Belanger"
+date: "2/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r}
+library(magrittr) #pipes
+library(ggplot2) #ploting 
+library(dplyr)  # data manipulation
+library(tidyr) # tidy data
+library(lubridate) #work with dates
+library(stringr) # manipulate strings
+library(plotly) #interactive graphs
+```
+
+
+# Import Data
+
+```{r}
+
+# readxl::excel_sheets(path = "../../data_public/Tableau 10 Training Practice Data.xlsx")
+# Used to read sheet names, makes user error less likly
+
+ds <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "08 - Department FTE Counts" 
+                        )
+
+
+# Glimpse at both Raw data sets
+
+ds %>% glimpse()  # Glimpse at data
+
+```
+
+# Transform Data Set FTE
+
+```{r}
+new_varnames <- c("department" , "budgeted_fte" , "actual_fte"  )
+
+names(ds) <- new_varnames 
+
+ds1 <-  ds %>% 
+          mutate(
+              off_by_fte = actual_fte - budgeted_fte
+          )
+
+```
+
+# Graph FTE Ggplot (Deviation Bar)
+
+```{r}
+g1 <- ds1 %>% 
+      ggplot(mapping = aes(x = reorder(department, -off_by_fte) , y = off_by_fte)) +
+      geom_col(fill = "#4e79a7") +
+      geom_hline(yintercept = 0) +
+      theme_bw() +
+      scale_y_continuous(limits = c(-80,30), breaks = seq(-80,30,10)) +
+      labs(
+        x      = NULL
+        ,y     = "FTE Off By"
+        ,title = "Deviation of Actual FTE to Budgeted FTE \nby Department"
+      )
+      
+g1
+  
+  
+```
+
+# Graph FTE Plotly
+
+```{r}
+ds2 <- ds1 %>%  arrange(-off_by_fte)
+
+
+g2 <- ds2 %>% 
+  
+  plot_ly(x = ~department, y = ~off_by_fte,  type = "bar"
+          ,hovertemplate = paste("Department : %{x}"
+                                 ,"<br>FTE Off By : %{y}")) %>% 
+  layout(
+    automargin = T
+    ,title = "Deviation of Actual FTE to Budgeted FTE \nby Department"
+    ,xaxis = list(title = ""
+                 ,categoryorder = "array"
+                 ,categoryarray = ~off_by_fte
+            )
+    ,yaxis = list(title = "FTE Off By"
+                  ,range = c(-85,35) # set limits
+                  ,dtick = 10  #set distance between ticks
+             )
+  )
+g2
+```
+
+
+
