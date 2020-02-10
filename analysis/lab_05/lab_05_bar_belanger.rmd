@@ -19,6 +19,8 @@ library(tidyr) # tidy data
 library(lubridate) #work with dates
 library(stringr) # manipulate strings
 library(plotly) #interactive graphs
+
+
 ```
 
 
@@ -99,6 +101,7 @@ g2 <- ds2 %>%
   )
 g2
 ```
+
 
 
 

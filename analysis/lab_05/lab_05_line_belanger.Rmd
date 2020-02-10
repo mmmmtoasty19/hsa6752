@@ -49,7 +49,7 @@ ds_yoy1 <- ds_yoy %>%
     ,year = year(ds_yoy$date)
   ) %>% 
   #select all columns but date
-  select(2:4) %>% 
+  select(patient_visits,month,year) %>% 
   #pivot date so each month has 2015 and 2016 data next to each other
   pivot_wider(names_from   = year
               ,values_from = patient_visits) %>% 
