@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
 
 # Load Libraries
 
-```{r}
+```{r Load Libraries}
 library(magrittr) #pipes
 library(ggplot2) #ploting 
 library(dplyr)  # data manipulation
@@ -23,7 +23,7 @@ library(plotly) #interactive graphs
 
 
 
-```{r }
+```{r}
 ds_yoy <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
                         ,sheet = "09 - Patient Volume YOY Change"
                         )
@@ -49,7 +49,7 @@ ds_yoy1 <- ds_yoy %>%
     ,year = year(ds_yoy$date)
   ) %>% 
   #select all columns but date
-  select(patient_visits,month,year) %>% 
+  select(-date) %>% 
   #pivot date so each month has 2015 and 2016 data next to each other
   pivot_wider(names_from   = year
               ,values_from = patient_visits) %>% 
@@ -91,10 +91,26 @@ g_yoy1 <- ds_yoy1 %>%
 
 
 g_yoy1
-  
-  
-  
+```
+
+# YOY Plotly
+
+```{r}
+g_yoy2 <-  ds_yoy1 %>% 
+  plot_ly(x = ~month, y = ~percent_difference, type = "scatter", mode = "line",
+          hovertemplate = paste("Month : %{x}"
+                                ,"<br>Difference : %{y}%") 
+          ) %>%
+  layout(
+    title = "Percent Change of Hospital Emergency Department Patient Volume by Month,  
+2016 compared with 2015"
+    ,xaxis = list(title = "")
+    ,yaxis = list(title = "YOY Patient Visit Percent Change")
+  )
+
+g_yoy2
   
   
 ```
+
 
