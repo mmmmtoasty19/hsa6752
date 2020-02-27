@@ -1,0 +1,53 @@
+---
+title: "Lab 6 Box and Whisker"
+author: "Kyle Belanger"
+date: "2/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+# Load Libraries
+
+```{r Load Libraries}
+library(magrittr) #pipes
+library(ggplot2) #ploting 
+library(plotly) #interactive graphs
+```
+
+
+
+```{r}
+ds0 <- readxl::read_xlsx(path = "../../data_public/Tableau 10 Training Practice Data.xlsx"
+                        ,sheet = "12 - Clinic Patients Demogr"
+                        )
+
+ds0 %>% glimpse()
+```
+
+```{r}
+g1 <- ds0 %>% 
+  ggplot(aes(x = Race, y = Age)) +
+  stat_boxplot(geom = "errorbar", coef = 100) + #used to draw the error bars
+  geom_boxplot(coef = 100, color = "black", fill = "#4e79a7") +  #coef extends whiskers, picked a high number to match tabaleau
+  scale_x_discrete(labels = c("As" = "Asian", "B" = "Black", "H" = "Hispanic"
+                              ,"W" = "White")) +
+  scale_y_continuous(breaks = seq(0,90,10), limits = c(30,90)) +
+  theme_classic() +
+  theme(panel.grid.major.y = element_line(color = "grey")) +
+  labs(
+    title = "Age Distribution of Cardiovascular Clinic Patients by Race"
+    ,x = NULL
+    ,y = "Age"
+  )
+  
+
+g1
+
+
+
+
+```
+
