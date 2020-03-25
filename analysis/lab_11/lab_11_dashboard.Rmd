@@ -1,0 +1,86 @@
+---
+title: "America's Drug Overdose Death Problem"
+author: "Kyle Belanger"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+    theme: paper
+---
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../') 
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 4, 
+  fig.width = 5.5, 
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 400
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- FALSE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./analysis/lab_11/lab_11.R") 
+```
+
+
+
+<!-- Load packages to be used in this report. --> 
+```{r load-packages, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Load the sources.  Suppress the output when loading sources. --> 
+```{r load-sources, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Load the datasets.   -->
+```{r load-data, echo=echoChunks, message=FALSE}
+```
+
+
+<!-- Inspect the datasets.   -->
+```{r inspect-data, echo=echoChunks,results='hide',message=FALSE}
+```
+
+
+
+<!-- Tweak the datasets.   -->
+```{r tweak-data, echo=echoChunks, message=FALSE}
+```
+
+
+### Deaths Timeline
+
+<!-- Deaths Timeline   -->
+```{r deaths-timeline, echo=echoChunks, results='show', message=FALSE, fig.width=12}
+```
+
+
+### 2015 Death Rates
+
+<!-- 2015 Death Rates   -->
+```{r 2015-death-rates, echo=echoChunks, fig.width=12, message=FALSE, results='show'}
+```
+
