@@ -152,11 +152,6 @@ g3 <- deaths_map_long %>%
     ,high = "#1c9099"
   ) +
   facet_wrap(~death_type) +
-  theme_bw() +
-  theme(axis.title.x = element_blank()
-        ,axis.title.y = element_blank()
-        ,axis.ticks = element_blank()
-        ,axis.text = element_blank()
-        ,legend.position = "bottom"
-        ,legend.title = element_blank())
+  theme_void() +
+  theme(legend.position = "bottom")
 g3
