@@ -71,6 +71,7 @@ g1
 
 # ---- symbol map -----------------------------------------------------
 
+
 state_centers <- data.frame(state.name,state.center) %>% 
   mutate(
     state = tolower(state.name)
@@ -85,7 +86,11 @@ ds_per_capita1 <-  ds_per_capita_raw %>%
 
 cancer_map_centers <-  cancer_map %>% 
   inner_join(state_centers) %>% 
-  inner_join(ds_per_capita1)
+  inner_join(ds_per_capita1) 
+
+#remove duplicate numbers
+cancer_map_centers$crude_death_rate[duplicated(cancer_map_centers$crude_death_rate)] <- NA
+
 
 g2 <- cancer_map_centers %>% 
   ggplot(aes(x = long, y = lat, group = group)) +
@@ -96,9 +101,10 @@ g2 <- cancer_map_centers %>%
     ,fill   = "#9ecae1"
     ,color  = "black"
     ,shape  = 21
-    ,alpha  = 0.4
+    ,alpha  = 0.6
+    ,na.rm  = TRUE
     ) +
-  scale_radius(range = c(2,8)) +
+  scale_radius(range = c(3,10)) +
   theme_void() +
   theme(
     legend.position = "bottom"
