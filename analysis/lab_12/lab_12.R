@@ -69,7 +69,7 @@ g1 <- cancer_map %>%
 
 g1
 
-# ---- symbol map -----------------------------------------------------
+# ---- symbol-map -----------------------------------------------------
 
 
 state_centers <- data.frame(state.name,state.center) %>% 
