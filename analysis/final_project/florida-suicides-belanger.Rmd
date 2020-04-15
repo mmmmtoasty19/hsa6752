@@ -1,0 +1,185 @@
+---
+title: "Final Project - Florida Suicide Trends"
+author: "William Kyle Belanger"
+date: "April 27, 2020"
+output:
+  html_document:
+    theme: simplex
+    toc: true
+    toc_depth: 3
+    keep_md: true
+    toc_float: true
+    code_folding: show
+---
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../') # set the root. "go up" from the folder where this .Rmd is save until you arrive at the root/working directory
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  attr.source = ".numberLines",
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 4, 
+  fig.width = 5.5, 
+  out.width = "550px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 400
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- TRUE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./analysis/final_project/florida-suicides-belanger.R") # path from the root to the R script relative to the root
+```
+
+# Environment
+<!-- Load packages to be used in the report  --> 
+```{r load-packages, echo=TRUE, message=FALSE}
+```
+
+<!-- Load 'sourced' R files.  Suppress the output when loading packages. --> 
+```{r load-sources, echo=TRUE, message=FALSE}
+```
+
+<!-- Load any Global functions and variables declared in the R file.  Suppress the output. -->
+```{r declare-globals, echo=echoChunks, results='show', message=FALSE}
+```
+
+
+# Data
+
+```{r load-data, echo=TRUE, results='show', message=FALSE}
+
+```
+
+# Tweaking
+
+```{r tweak-data-1, echo=TRUE, results='show', message=FALSE}
+```
+
+# Population trends 
+
+## 1. Total count 
+> How does the total population of Florida changes between 2006 and 2020?
+
+```{r population_1, echo=echoChunks, fig.height=5, fig.width=9, out.width = "900px",message=FALSE, results='show',cache=TRUE}
+```
+
+The total population of Florida has been steadily growing since the beginning of this data set. 
+
+## 2. Within age groups
+> What was the trajectory of population growth for each age group?
+
+```{r population_2, echo=echoChunks, fig.height=5, fig.width=9, out.width = "900px",message=FALSE, results='show',cache=TRUE}
+```
+
+Populations under 19 have seen a slow rise since around 2011, prior to this there was a sharp decline in the younger ages.  20 to 24 years have in recent years seen a downward trend in total population. Ages 55 and up have been steadly growing since 2010, wereas the 45-54 population saw a marked growth in 2010, and has held steady since.
+
+## 3. Sex and age groups
+> For residends between 10 and 84 years of age, what was the trajectory of growth for each age group by sex? 
+
+```{r population_3, echo=echoChunks, results='show', fig.height=5, fig.width=9,out.width = "900px", message=FALSE,cache=TRUE}
+```
+Growth by sex has seen the same paterns explained in the previous graph.  For AGes 34 and under, there are slightly more males then female, where in the older populations there are more females.
+
+
+## 4. Ethnic group
+> For residends between 10 and 84 years of age, what was the trajectory of growth for each ethnic group?
+
+```{r population_4, echo=echoChunks, fig.height=7, fig.width=9, out.width = "900px", message=FALSE, results='show',cache=TRUE}
+```
+The highest growth for these groups is in the White + Non-Hispanic, for all ages older then 24 this group has been growing, with the expect of 35 to 44, this age range has been declining.  For all comboniations of race there has been slight growth arcoss this time period.
+
+# Suicide counts 
+
+## 1. Total count 
+> What is the trajectory of total suicides in FL between 2006 and 2017?
+
+```{r suicide_1, echo=echoChunks, fig.height=5, fig.width=9, out.width = "900px",message=FALSE, results='show',cache=TRUE}
+```
+
+Total suicides have been increasing during this time period.  There have been some years of decline but the overall trend has been increasing.
+
+## 2. Men vs Women
+> How does the trend of total suicides differ between men and women?
+
+```{r suicide_2, echo=echoChunks, fig.height=5, fig.width=9, out.width = "900px",message=FALSE, results='show',cache=TRUE}
+```
+
+Both sexes have an overall increase in suicides during this time period.  However there are around twice as many more male suicides as there are female suicides.
+
+## 3. Sex and age groups
+>For residends between 10 and 84 years of age, how does the trend of suicides counts among ethnic groups differ by sex?  
+
+```{r suicide_3, echo=echoChunks, results='show', fig.height=5, fig.width=9,out.width = "900px", message=FALSE,cache=TRUE}
+```
+
+Based on this data most Florida suicides are recording in the White + Non Hispanic group.  This is true for both male and females, with again males being more likley to commit suicide
+
+## 4. Ethnic group
+
+> For residends between 10 and 84 years of age, how does the trend of total suicides between men and women differ across ethnic groups?  
+
+```{r suicide_4, echo=echoChunks, fig.height=7, fig.width=9, out.width = "900px", message=FALSE, results='show',cache=TRUE}
+```
+Based on the data for all ethnic groups female suicide has stayed pretty low, with little to no growth over this time period. On the male side the Latino population has seen a steady rise in suicide cases over this time period
+
+# Suicide rates
+
+## 1. Function `compute_rates`
+
+```{r compute_rate_function, echo=echoChunks, fig.height=7, fig.width=9, out.width = "900px", message=FALSE, results='show',cache=TRUE}
+```
+
+
+## 2. Total rates
+>  What is the trend of the total suicide rates in Florida between 2006 and 2017?  
+
+```{r suicide_rate_1, echo=echoChunks, fig.height=7, fig.width=9, out.width = "900px", message=FALSE, results='show',cache=TRUE}
+```
+
+Suicide rates had sharp growth from 2006 to 2009, then had a decline and have been overall slowly rising back up, ending at the 2009 levels
+
+## 3. Youth by race and gender
+> For residends between 10 and 24 years of age, how does the rate of suicide vary by race and gender?  
+
+```{r suicide_rate_2, echo=echoChunks, fig.height=7, fig.width=9, out.width = "900px", message=FALSE, results='show',cache=TRUE}
+```
+Youth suicide rates, have had an overall slight growth during the observed time period.  However due to some small populations, the rates are somewhat all over the places, as having a low population even just 1 total event, can spike the rate.
+
+# Further insights
+
+What other interesting patterns did you discern in this data? 
+
+
+session information
+===========================================================================
+
+For the sake of documentation and reproducibility, the current report was rendered in the following environment.  Click the line below to expand.
+
+<details>
+  <summary>Environment <span class="glyphicon glyphicon-plus-sign"></span></summary>
+```{r session-info, echo=FALSE}
+if( requireNamespace("devtools", quietly = TRUE) ) {
+  devtools::session_info()
+} else {
+  sessionInfo()
+} 
+```
